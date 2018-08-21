@@ -32,4 +32,17 @@ module.exports = class Response {
   static loginIncorrect() {
     return (new SocketMessage(530, `Login incorrect.`)).toString();
   }
+
+  static features(features) {
+    const feat = features.join('\r\n');
+    return (new SocketMessage(211, 'End', `211-Features:\r\n${feat}`)).toString();
+  }
+
+  static unixType() {
+    return (new SocketMessage(215, `UNIX Type: L8`)).toString();
+  }
+
+  static quit() {
+    return (new SocketMessage(221, `Goodbye.`)).toString();
+  }
 };

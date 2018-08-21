@@ -2,6 +2,15 @@ const Response = require('./Response.js');
 const { commandRegexp } = require('./expressions.js');
 
 module.exports = class Commands {
+  static commandsWithoutAuth() {
+    return [
+      'feat',
+      'syst',
+      'help',
+      'quit'
+    ];
+  }
+
   constructor(server, socket, options) {
     this.server = server;
     this.socket = socket;
@@ -18,21 +27,21 @@ module.exports = class Commands {
 
   run(command) {
     const match = Commands.parse(command);
+    const fnName = (match === null) ? command.toLowerCase().trim() : match[1].toLowerCase().trim();
 
-    if (this.options.mock.authentication && !this.socket.logged) {
+    if (Commands.commandsWithoutAuth().indexOf(fnName) === -1 && this.options.mock.authentication && !this.socket.logged) {
       return this.auth(match);
     }
 
-    if (match !== null && match.length > 1) {
-      const fnName = match[1].toLowerCase().trim();
-
-      if (typeof this[fnName] === 'function') {
-
+    if (typeof this[fnName] === 'function') {
+      if (match !== null && match.length > 1) {
         if (typeof match[2] !== 'undefined') {
           return this[fnName](match[2].trim());
         }
 
         return this[fnName](match[1].trim());
+      } else {
+        return this[fnName]();
       }
     }
 
@@ -89,8 +98,21 @@ module.exports = class Commands {
     // });
   }
 
+  feat() {
+    return Response.features([
+      'UTF8',
+    ]);
+  }
+
+  syst() {
+    return Response.unixType();
+  }
+
   help() {
     return Response.help();
   }
 
+  quit() {
+    return this.socket.end(Response.quit());
+  }
 };
