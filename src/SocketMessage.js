@@ -2,7 +2,10 @@ module.exports = class SocketMessage {
   constructor(code, message, preMessage) {
     this.code = code;
     this.message = message.replace(/(\r\n\t|\n|\r\t)/gm, '');
-    this.preMessage = preMessage;
+
+    if (typeof preMessage !== 'undefined') {
+      this.preMessage = preMessage;
+    }
   }
 
   toString() {

@@ -1,10 +1,10 @@
 {
   "name": "ftp-mock",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "FTP mock for tests.",
   "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node_modules/.bin/mocha test/index.js"
   },
   "repository": {
     "type": "git",
@@ -22,6 +22,8 @@
   },
   "homepage": "https://github.com/icetee/ftp-mock#readme",
   "devDependencies": {
-    "chai": "^4.1.2"
+    "@icetee/ftp": "git://github.com/icetee/node-ftp.git#feature/rewrite",
+    "chai": "^4.1.2",
+    "mocha": "^5.2.0"
   }
 }

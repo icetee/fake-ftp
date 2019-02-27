@@ -1,9 +1,13 @@
-const Response = require('./Response.js');
-const { commandRegexp } = require('./expressions.js');
+const { linux } = require('./assets/list.js');
+const { getRandomPort } = require('./helper.js');
+const { Response } = require('./Response.js');
+const { RE_CMD, RE_PORT } = require('./expressions.js');
 
 module.exports = class Commands {
   static commandsWithoutAuth() {
     return [
+      'user',
+      'pass',
       'feat',
       'syst',
       'help',
@@ -22,26 +26,30 @@ module.exports = class Commands {
   }
 
   static parse(command) {
-    return command.replace(/\r?\n|\r/g, '').match(commandRegexp);
+    return command.replace(/\r?\n|\r/g, '').match(RE_CMD);
   }
 
-  run(command) {
+  async run(command) {
     const match = Commands.parse(command);
     const fnName = (match === null) ? command.toLowerCase().trim() : match[1].toLowerCase().trim();
 
-    if (Commands.commandsWithoutAuth().indexOf(fnName) === -1 && this.options.mock.authentication && !this.socket.logged) {
+    if (Commands.commandsWithoutAuth().indexOf(fnName) === -1 && this.options.authentication && !this.socket.logged) {
       return this.auth(match);
     }
 
     if (typeof this[fnName] === 'function') {
       if (match !== null && match.length > 1) {
         if (typeof match[2] !== 'undefined') {
-          return this[fnName](match[2].trim());
+          return await this[fnName](match[2].trim());
         }
 
-        return this[fnName](match[1].trim());
+        return await this[fnName](match[1].trim());
       } else {
-        return this[fnName]();
+        if (fnName === 'list') {
+          return await this[fnName]();
+        }
+
+        return await this[fnName]();
       }
     }
 
@@ -73,7 +81,7 @@ module.exports = class Commands {
   }
 
   pass(password) {
-    const account = this.options.mock.accounts.filter((account, index) => {
+    const account = this.options.accounts.filter((account, index) => {
       return account.username === this.socket.username;
     });
 
@@ -88,19 +96,69 @@ module.exports = class Commands {
     return Response.loginIncorrect();
   }
 
-  list(target) {
-    return Response.noImplemented();
+  async dataSocket(buffer) {
+    if (this.options.passive) {
+      await this.socket.writePassiveDataSocket(buffer);
+    } else {
+      await this.socket.writeActiveDataSocket(buffer);
+    }
+  }
 
-    // this.socket.dataTransfer((dataSocket, finish) => {
-    //   this.socket.fs.list(target || this.socket.fs.pwd(), (result) => {
-    //     dataSocket.write(result + '\r\n', finish);
-    //   });
-    // });
+  async list(target) {
+    await this.dataSocket(Buffer.from(linux));
+
+    return Response.transferComplete();
+  }
+
+  port(info) {
+    const portMatch = info.match(RE_PORT);
+
+    if (!portMatch) {
+      Response.portFail();
+    }
+
+    this.socket.dataSocketInfo = {
+      host: `${portMatch[1]}.${portMatch[2]}.${portMatch[3]}.${portMatch[4]}`,
+      port: (parseInt(portMatch[5], 10) * 256) + parseInt(portMatch[6], 0)
+    };
+
+    return Response.portSuccess();
+  }
+
+  pasv() {
+    const randomPort = getRandomPort(
+      this.options.dataSocket.passive.portMin,
+      this.options.dataSocket.passive.portMax
+    );
+
+    this.server.dataSocketInfo = {
+      host: this.socket.address().address.split('.').join(','),
+      hostOriginal: this.socket.address().address,
+      port: randomPort.port,
+      p1: randomPort.p1,
+      p2: randomPort.p2,
+    };
+
+    return Response.pasvSuccess(
+      `${this.server.dataSocketInfo.host},${randomPort.p1},${randomPort.p2}`
+    );
+  }
+
+  type(info) {
+    return Response.typeSuccess(info);
+  }
+
+  pwd() {
+    return Response.noImplemented();
+  }
+
+  opts() {
+    return Response.noImplemented();
   }
 
   feat() {
     return Response.features([
-      'UTF8',
+      // 'UTF8',
     ]);
   }
 

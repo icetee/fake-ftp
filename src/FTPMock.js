@@ -4,15 +4,28 @@ const { mergeDeep } = require('./helper.js');
 module.exports = class FTPMock {
   constructor() {
     this.options = {
-      mock: {
-        host: '127.0.0.1',
-        port: 9021,
-        accounts: [{
-          username: 'icetee',
-          password: 'secret',
-        }],
-        welcomeMessage: true,
-        authentication: true,
+      host: '127.0.0.1',
+      port: 9021,
+      silent: true,
+      accounts: [{
+        username: 'icetee',
+        password: 'secret',
+      }],
+      welcomeMessage: true,
+      authentication: true,
+      passive: false,
+      dataSocket: {
+        active: {
+          port: 9020,
+          keepalive: 0,
+          timeout: 0
+        },
+        passive: {
+          portMin: 1024,
+          portMax: 65535, // 255 * 256 + 255
+          keepalive: 0,
+          timeout: 0
+        }
       },
       originalServer: {},
     };
@@ -21,8 +34,15 @@ module.exports = class FTPMock {
   async createServer(options) {
     const opt = mergeDeep(this.options, options);
 
-    this.server = await (new Server()).listen(opt);
+    this.server = new Server(opt);
+    this.controlSocket = await this.server.listen();
 
-    console.log('Server listening on ' + this.server.address().address + ':' + this.server.address().port);
+    if (!this.options.silent) {
+      console.log('Server listening on ' + this.controlSocket.address().address + ':' + this.controlSocket.address().port);
+    }
+  }
+
+  close() {
+    this.server.destroy();
   }
 };
