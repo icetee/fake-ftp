@@ -1,29 +1,37 @@
 {
-  "name": "ftp-mock",
-  "version": "0.0.2",
-  "description": "FTP mock for tests.",
+  "name": "fake-ftp",
+  "version": "0.0.3",
+  "description": "Fake FTP implementation for tests.",
   "main": "src/index.js",
   "scripts": {
-    "test": "node_modules/.bin/mocha test/index.js"
+    "start": "tsc -w",
+    "build": "tsc",
+    "lint": "tslint src/**/*.ts -t verbose",
+    "test": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' mocha -r ts-node/register test/**/*.spec.ts"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/icetee/ftp-mock.git"
+    "url": "git+https://github.com/icetee/fake-ftp.git"
   },
   "keywords": [
-    "mock",
+    "fake",
     "ftp",
     "test"
   ],
   "author": "Tamás Andárs Horváth <htomy92@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/icetee/ftp-mock/issues"
+    "url": "https://github.com/icetee/fake-ftp/issues"
   },
-  "homepage": "https://github.com/icetee/ftp-mock#readme",
+  "homepage": "https://github.com/icetee/fake-ftp#readme",
   "devDependencies": {
-    "@icetee/ftp": "git://github.com/icetee/node-ftp.git#feature/rewrite",
-    "chai": "^4.1.2",
-    "mocha": "^5.2.0"
+    "@types/chai": "^4.1.7",
+    "@types/mocha": "^5.2.6",
+    "@types/node": "^11.9.6",
+    "chai": "^4.2.0",
+    "mocha": "^6.0.2",
+    "ts-node": "^8.0.2",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^3.3.3333"
   }
 }

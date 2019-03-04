@@ -41,6 +41,7 @@ typings/
 
 # Optional npm cache directory
 .npm
+package-lock.json
 
 # Optional eslint cache
 .eslintcache
@@ -57,3 +58,6 @@ typings/
 # dotenv environment variables file
 .env
 
+# Custom
+.note
+.ftpconfig

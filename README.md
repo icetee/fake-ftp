@@ -1,2 +1,1 @@
-# mockserver-ftp
-Mock FTP requests
+# Fake FTP requests

@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "outDir": "build",
+    "sourceMap": false,
+    "moduleResolution": "node",
+    "module": "commonjs",
+    "target": "es6",
+    "allowJs": false,
+    "rootDir": "src",
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noImplicitAny": true,
+    "importHelpers": true,
+    "strictNullChecks": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "noUnusedLocals": true,
+    "types": [
+      "node",
+      "mocha",
+      "chai"
+    ]
+  },
+  "include": [
+    "./src/"
+  ]
+}
