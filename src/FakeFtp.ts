@@ -4,6 +4,7 @@ import * as net from 'net';
 import * as Server from 'Server';
 import { TCPServer } from './Server';
 import { SocketClientMessage, CommandRunner } from './Delivery';
+import { SocketParse } from './Delivery';
 
 /**
 * Implementation of a Faker FTP Server.
@@ -27,14 +28,17 @@ export default class FakeFtp {
       }
 
       socket.on('data', (data: Buffer) => {
-        const clientMessage = new SocketClientMessage(data);
-        const serverResponse = CommandRunner.getServerResponse(clientMessage).getMessage();
+        const clientMessageCollection = (new SocketParse(data)).getCommands();
 
-        if (clientMessage.command) {
-          return socket.end(serverResponse);
-        }
+        clientMessageCollection.forEach((clientMessage: SocketClientMessage) => {
+          const serverResponse = CommandRunner.getServerResponse(clientMessage).getMessage();
 
-        socket.write(serverResponse);
+          if (clientMessage.command === 'quit') {
+            return socket.end(serverResponse);
+          }
+
+          socket.write(serverResponse);
+        });
       });
 
       socket.on('error', (err: NodeJS.ErrnoException) => {

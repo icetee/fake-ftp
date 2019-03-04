@@ -1,9 +1,12 @@
-/// <reference path="../../src/Commands/Commands.d.ts" />
-
 import * as net from 'net';
 import { assert } from 'chai';
 import FakeFtp from '../../src/FakeFtp';
-import { SocketClientMessage, SocketServerMessage, CommandRunner } from '../../src/Delivery';
+import SocketServerParse from '../assets/SocketServerParse';
+import {
+  SocketClientMessage,
+  SocketServerMessage,
+  CommandRunner
+} from '../../src/Delivery';
 
 describe('FakeFtpServer', () => {
   const testConfig = {
@@ -115,6 +118,47 @@ describe('FakeFtpServer', () => {
           if (data.toString() === CommandRunner.getServerCommand(CommandRunner.Feats.Quit).getMessage()) {
             client.destroy();
           }
+        });
+
+        client.on('close', async () => {
+          await FakeFtpTCP.close();
+
+          done();
+        });
+      })();
+    });
+
+    it('return correct command collection when multiple serial messages come', (done) => {
+      (async () => {
+        const FakeFtpConfig = {
+          ...testConfig,
+          welcome: false,
+        };
+        const FakeFtpServer = new FakeFtp(FakeFtpConfig);
+        const FakeFtpTCP: net.Server = await (FakeFtpServer).start();
+
+        const client = new net.Socket();
+
+        client.connect(testConfig.port, testConfig.host, () => {
+          client.write(new SocketClientMessage('mock').getMessage());
+          client.write(new SocketClientMessage('hack').getMessage());
+          client.write(new SocketClientMessage('quit').getMessage());
+        });
+
+        client.on('data', (data: Buffer | String) => {
+          const serverMessageCollection = (new SocketServerParse(data)).getServerCommands();
+
+          const assertMessage = [
+            CommandRunner.getServerResponse(new SocketClientMessage('nu')).getMessage(),
+            CommandRunner.getServerResponse(new SocketClientMessage('nu')).getMessage(),
+            CommandRunner.getServerResponse(new SocketClientMessage('quit')).getMessage(),
+          ];
+
+          serverMessageCollection.forEach((serverMessage: SocketServerMessage, index: number) => {
+            assert.equal(serverMessage.getMessage(), assertMessage[index]);
+          });
+
+          client.destroy();
         });
 
         client.on('close', async () => {

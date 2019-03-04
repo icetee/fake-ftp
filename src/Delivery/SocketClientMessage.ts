@@ -12,9 +12,9 @@ export default class SocketClientMessage implements Delivery.SocketClientMessage
 
     if (message && message.groups) {
       if (message.groups.single) {
-        this.command = message.groups.single;
+        this.command = message.groups.single.toLowerCase();
       } else {
-        this.command = message.groups.command;
+        this.command = message.groups.command.toLowerCase();
         this.value = message.groups.value;
       }
     }

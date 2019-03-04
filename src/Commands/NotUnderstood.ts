@@ -7,7 +7,7 @@ import { SocketServerMessage } from '../Delivery';
 
 export default class NotUnderstood implements Commands.ICommand {
   code = 500;
-  name = '';
+  name = 'nu';
   defaultMessage = ':command: not understood';
 
   /**

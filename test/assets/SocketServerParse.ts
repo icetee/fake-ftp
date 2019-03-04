@@ -1,11 +1,11 @@
-import SocketClientMessage from './SocketClientMessage';
+import SocketServerMessage from '../../src/Delivery/SocketServerMessage';
 
 const RE_RES_END = /((\w*)\s(.*)|(\w*))(\r\n|\n\r|\r|\n|\t)/;
 
-export default class SocketParse {
+export default class SocketServerParse {
   constructor(public chuck: Buffer | String) { }
 
-  getCommands(): SocketClientMessage[] {
+  getServerCommands(): SocketServerMessage[] {
     const commands = [];
 
     let buffer = this.chuck.toString();
@@ -16,7 +16,7 @@ export default class SocketParse {
       if (m !== null) {
         const rest = buffer.substring(m.index + m[0].length);
 
-        commands.push(new SocketClientMessage(m[0]));
+        commands.push(new SocketServerMessage(parseInt(m[1], 10), m[3]));
 
         buffer = rest;
       }

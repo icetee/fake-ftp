@@ -10,7 +10,7 @@ export default class CommandRunner {
   static getServerResponse(
     message: Delivery.SocketClientMessage
   ): Delivery.SocketServerMessage {
-    const commandIndex = Object.values(Commands.Feats).indexOf(message.command.toLowerCase());
+    const commandIndex = Object.values(Commands.Feats).indexOf(message.command);
 
     if (commandIndex === -1) {
       return (new Commands.NotUnderstood()).getSocketMessage();
