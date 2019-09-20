@@ -37,7 +37,7 @@ module.exports = class FTPMock {
     this.server = new Server(opt);
     this.controlSocket = await this.server.listen();
 
-    if (!this.options.silent) {
+    if (! this.options.silent) {
       console.log('Server listening on ' + this.controlSocket.address().address + ':' + this.controlSocket.address().port);
     }
   }

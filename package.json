@@ -22,8 +22,8 @@
   },
   "homepage": "https://github.com/icetee/ftp-mock#readme",
   "devDependencies": {
-    "@icetee/ftp": "git://github.com/icetee/node-ftp.git#feature/rewrite",
-    "chai": "^4.1.2",
+    "@icetee/ftp": "https://github.com/icetee/node-ftp.git#feature/rewrite",
+    "chai": "^4.2.0",
     "mocha": "^5.2.0"
   }
 }

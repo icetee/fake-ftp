@@ -19,8 +19,6 @@ module.exports = class Server {
     this.server = null;
     this.socket = null;
     this.commands = null;
-    // this.activeDataSocket = null;
-    // this.passiveDataSocket = null;
   }
 
   send(response) {
@@ -57,8 +55,10 @@ module.exports = class Server {
           this.socket = null;
         });
 
-        this.socket.on('error', (err) => {
+        this.socket.on('error', (error) => {
           debug(error);
+
+          reject(error);
           // this.destroy();
         });
 
@@ -79,12 +79,12 @@ module.exports = class Server {
 
             this.activeDataSocket.on('error', (error) => {
               debug(error);
-              this.activeDataSocket.destroy();
+              this.activeDataSocket.end();
               reject(error);
             });
 
             this.activeDataSocket.on('close', () => {
-              this.activeDataSocket.destroy();
+              this.activeDataSocket.end();
             });
           });
         };
@@ -97,24 +97,31 @@ module.exports = class Server {
 
               dataSocket.once('connection', () => {
                 debug('[connection] PASV socket connected');
+
                 resolve();
               });
             });
 
             this.passiveDataSocket.on('error', (error) => {
               debug(error);
-              this.passiveDataSocket.destroy();
-              reject(error);
+
+              this.passiveDataSocket.close();
+
+              if (error) {
+                reject(error);
+              }
             });
 
             this.passiveDataSocket.on('close', (error) => {
-              debug(error);
-              this.passiveDataSocket.destroy();
-              reject(error);
+              if (error) {
+                reject(error);
+              }
             });
 
             this.passiveDataSocket.listen(this.server.dataSocketInfo.port, this.server.dataSocketInfo.hostOriginal, () => {
-              console.log(`DataSocket listening on ${this.passiveDataSocket.address().address}:${this.passiveDataSocket.address().port}`);
+              if (! this.options.silent) {
+                console.log(`DataSocket listening on ${this.passiveDataSocket.address().address}:${this.passiveDataSocket.address().port}`);
+              }
             });
           });
         };

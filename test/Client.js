@@ -1,4 +1,6 @@
 const net = require('net');
+const { lookup } = require('dns');
+const { hostname } = require('os');
 const { Socket } = require('net');
 const { inherits, inspect } = require('util');
 const EventEmitter = require('events');
@@ -68,14 +70,18 @@ module.exports = class Client {
 
   async active(randomPort) {
     return new Promise((resolve, reject) => {
-      require('dns').lookup(require('os').hostname(), (err, ip) => {
-        const host = ip.split('.').join(',');
+      lookup(hostname(), (err, address) => {
+        if (err) {
+          reject(err);
+        }
+
+        const host = address.split('.').join(',');
 
         this.activeServer = net.createServer((dataSocket) => {
           this.dataSocket = dataSocket;
         });
 
-        this.activeServer.listen(randomPort[0] * 256 + randomPort[1], ip, () => {
+        this.activeServer.listen(randomPort[0] * 256 + randomPort[1], address, () => {
           resolve(`PORT ${host},${randomPort[0]},${randomPort[1]}`);
         });
       });
@@ -95,14 +101,16 @@ module.exports = class Client {
 
       this.passiveSocket.once('error', (err) => {
         debug('[connection] PASV error', err);
+
+        reject(err);
       });
 
-      this.passiveSocket.once('end', (err) => {
-        debug('[connection] PASV END', err);
+      this.passiveSocket.once('end', () => {
+        debug('[connection] PASV END');
       });
 
-      this.passiveSocket.once('close', (err) => {
-        debug('[connection] PASV CLOSE', err);
+      this.passiveSocket.once('close', (had_error) => {
+        debug('[connection] PASV CLOSE', had_error);
       });
 
       this.passiveSocket.connect(port, host);

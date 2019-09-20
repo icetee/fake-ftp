@@ -1,6 +1,6 @@
 process.env.DEBUG = '0';
 
-const { assert } = require('chai');
+const { assert}  = require('chai');
 const Client = require('./Client');
 const { FTPMock, ResponseMessage, Parse } = require('../src');
 const { RE_PASV } = require('../src/expressions.js');
@@ -22,21 +22,24 @@ const mockConfig = {
 
 const ftpMock = new FTPMock();
 
-describe('#FTPMock with default config', function() {
-  beforeEach(function() {
+describe('#FTPMock with default config', () =>{
+  beforeEach(() => {
     // ftpMock.createServer(mockConfig);
   });
 
-  afterEach(function() {
-		ftpMock.close();
-	});
+  afterEach(() =>{
+    if (ftpMock) {
+      ftpMock.close();
+    }
+  });
 
-  it('should return default welcomeMessage', function(done) {
+  it('should return default welcomeMessage', (done) => {
     ftpMock.createServer(mockConfig);
+
     const client = new Client(defaultConfig);
 
-    (async function(done) {
-      client.emitter.on('response', function(messages) {
+    (async (done) => {
+      client.emitter.on('response', (messages) => {
         const welcomeMessage = ResponseMessage.welcomeMessage(
           packageInfo.version,
           client.socket.address().address
@@ -47,21 +50,23 @@ describe('#FTPMock with default config', function() {
         done();
       });
 
-      const socket = await client.connect();
+      await client.connect();
 
       client.destroy();
     })(done);
   });
 
-  it('should be success logged in [USER, PASS]', function(done) {
+  it('should be success logged in [USER, PASS]', (done) => {
     ftpMock.createServer(mockConfig);
+
     const client = new Client(defaultConfig);
 
     (async function(done) {
       let index = 0;
 
-      const socket = await client.connect();
-      client.emitter.on('parsed', function(messages) {
+      await client.connect();
+
+      client.emitter.on('parsed', (messages) => {
         messages.forEach((message) => {
           assert.deepEqual(entities[index], message);
           index++;
@@ -79,19 +84,22 @@ describe('#FTPMock with default config', function() {
       assert.equal(index, entities.length);
 
       client.destroy();
+
       done();
     })(done);
   });
 
-  it('should be PORT success [PORT]', function(done) {
+  it('should be PORT success [PORT]', (done) => {
     ftpMock.createServer(mockConfig);
+
     const client = new Client(defaultConfig);
 
-    (async function(done) {
+    (async (done) => {
       let index = 0;
 
-      const socket = await client.connect();
-      client.emitter.on('parsed', function(messages) {
+      await client.connect();
+
+      client.emitter.on('parsed', (messages) => {
         messages.forEach((message) => {
           assert.deepEqual(entities[index], message);
           index++;
@@ -114,20 +122,23 @@ describe('#FTPMock with default config', function() {
       assert.equal(index, entities.length);
 
       client.destroy();
+
       done();
     })(done);
   });
 
-  it('should be transfer completed LIST with Active channel', function(done) {
+  it('should be transfer completed LIST with Active channel', (done) => {
     ftpMock.createServer(mockConfig);
+
     const client = new Client(defaultConfig);
     const dest = '/';
 
-    (async function(done) {
+    (async (done) => {
       let index = 0;
 
-      const socket = await client.connect();
-      client.emitter.on('parsed', function(messages) {
+      await client.connect();
+
+      client.emitter.on('parsed', (messages) => {
         messages.forEach((message) => {
           assert.deepEqual(entities[index], message);
           index++;
@@ -156,22 +167,24 @@ describe('#FTPMock with default config', function() {
       assert.equal(index, entities.length);
 
       client.destroy();
+
       done();
     })(done);
   });
 
-  it('should be PASV success', function(done) {
+  it('should be PASV success', (done) => {
     ftpMock.createServer({
       passive: true,
     });
 
     const client = new Client(defaultConfig);
 
-    (async function(done) {
+    (async (done) => {
       let index = 0;
 
-      const socket = await client.connect();
-      client.emitter.on('parsed', function(messages) {
+      await client.connect();
+
+      client.emitter.on('parsed', (messages) => {
         messages.forEach((socketMessage) => {
           if (RE_PASV.exec(socketMessage.message)) {
             const pasv = ResponseMessage.pasvSuccess(`${ftpMock.controlSocket.dataSocketInfo.host},${ftpMock.controlSocket.dataSocketInfo.p1},${ftpMock.controlSocket.dataSocketInfo.p2}`);
@@ -198,13 +211,12 @@ describe('#FTPMock with default config', function() {
       assert.equal(index, entities.length);
 
       client.destroy();
+
       done();
     })(done);
   });
 
-  it('should be transfer completed LIST with Passive channel', function(done) {
-    process.env.DEBUG = '1';
-
+  it('should be transfer completed LIST with Passive channel', (done) => {
     ftpMock.createServer({
       passive: true,
     });
@@ -212,16 +224,18 @@ describe('#FTPMock with default config', function() {
     const client = new Client(defaultConfig);
     const dest = '/';
 
-    (async function(done) {
+    (async (done) => {
       let index = 0;
 
-      const socket = await client.connect();
-      client.emitter.on('parsed', function(messages) {
+      await client.connect();
+
+      client.emitter.on('parsed', (messages) => {
         messages.forEach((socketMessage) => {
           if (RE_PASV.exec(socketMessage.message)) {
             const pasv = ResponseMessage.pasvSuccess(`${ftpMock.controlSocket.dataSocketInfo.host},${ftpMock.controlSocket.dataSocketInfo.p1},${ftpMock.controlSocket.dataSocketInfo.p2}`);
 
             entities.splice(index, 0, pasv);
+
             assert.deepEqual(entities[index], socketMessage);
           } else {
             assert.deepEqual(entities[index], socketMessage);
@@ -248,6 +262,7 @@ describe('#FTPMock with default config', function() {
       assert.equal(index, entities.length);
 
       client.destroy();
+
       done();
     })(done);
   });
