@@ -6,7 +6,7 @@ export default class SocketServerParse {
   constructor(public chuck: Buffer | String) { }
 
   getServerCommands(): SocketServerMessage[] {
-    const commands = [];
+    const commands : SocketServerMessage[] = [];
 
     let buffer = this.chuck.toString();
 

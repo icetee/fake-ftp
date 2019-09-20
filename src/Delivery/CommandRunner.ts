@@ -10,7 +10,8 @@ export default class CommandRunner {
   static getServerResponse(
     message: Delivery.SocketClientMessage
   ): Delivery.SocketServerMessage {
-    const commandIndex = Object.values(Commands.Feats).indexOf(message.command);
+    const commandFeats : Array<String> = Object.values(Commands.Feats);
+    const commandIndex = commandFeats.indexOf(message.command);
 
     if (commandIndex === -1) {
       return (new Commands.NotUnderstood()).getSocketMessage();
@@ -24,7 +25,8 @@ export default class CommandRunner {
   static getServerCommand(
     command: Commands.Feats
   ): Delivery.SocketServerMessage {
-    const commandIndex = Object.values(Commands.Feats).indexOf(command);
+    const commandFeats : Array<String> = Object.values(Commands.Feats);
+    const commandIndex = commandFeats.indexOf(command);
 
     if (commandIndex === -1) {
       return (new Commands.NotUnderstood()).getSocketMessage();

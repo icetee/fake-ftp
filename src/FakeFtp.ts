@@ -57,3 +57,7 @@ export default class FakeFtp {
     };
   }
 }
+
+process.on('unhandledRejection', error => {
+  console.log('unhandledRejection', error);
+});

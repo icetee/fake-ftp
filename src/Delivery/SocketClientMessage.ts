@@ -10,18 +10,20 @@ export default class SocketClientMessage implements Delivery.SocketClientMessage
     const msg = text.toString().replace(/(\r|\n|\t)/gm, '');
     const message = msg.match(/^(?<command>\w*)\s(?<value>.*)|(?<single>\w*)$/);
 
-    if (message && message.groups) {
-      if (message.groups.single) {
-        this.command = message.groups.single.toLowerCase();
+    if (message && typeof message['groups'] !== 'undefined') {
+      const groups = message['groups'];
+
+      if (groups.single) {
+        this.command = groups.single.toLowerCase();
       } else {
-        this.command = message.groups.command.toLowerCase();
-        this.value = message.groups.value;
+        this.command = groups.command.toLowerCase();
+        this.value = groups.value;
       }
     }
   };
 
   getMessage(): string {
-    if (!this.value) {
+    if (! this.value) {
       return `${this.command}\r\n`;
     }
 

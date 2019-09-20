@@ -5,12 +5,14 @@
     "moduleResolution": "node",
     "module": "commonjs",
     "target": "es6",
+    "removeComments": true,
+    "preserveConstEnums": true,
     "allowJs": false,
     "rootDir": "src",
     "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
-    "noImplicitAny": true,
+    "noImplicitAny": false,
     "importHelpers": true,
     "strictNullChecks": true,
     "suppressImplicitAnyIndexErrors": true,
@@ -19,9 +21,16 @@
       "node",
       "mocha",
       "chai"
+    ],
+    "lib": [
+      "es2017",
     ]
   },
   "include": [
-    "./src/"
+    "./src/",
+    "./test/"
+  ],
+  "exclude": [
+    "node_modules"
   ]
 }
