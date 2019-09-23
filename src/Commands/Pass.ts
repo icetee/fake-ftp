@@ -8,10 +8,10 @@ import * as Commands from "Commands";
 import FakeCommand from './FakeCommand';
 import { SocketServerMessage } from '../Delivery';
 
-export default class User extends FakeCommand implements Commands.ICommand {
-  code = 257;
-  name = 'user';
-  defaultMessage = 'User:';
+export default class Pass extends FakeCommand implements Commands.ICommand {
+  code = 530;
+  name = 'pass';
+  defaultMessage = 'Login incorrect.';
 
   /**
    * The error message is sent when the command exists but is not implemented.
@@ -23,11 +23,11 @@ export default class User extends FakeCommand implements Commands.ICommand {
     const text = message ? message : this.defaultMessage;
 
     if (this.clientMessage && this.clientMessage.value) {
-      this.fakeFtp.storage.user = this.clientMessage.value;
+      this.fakeFtp.storage.password = this.clientMessage.value;
     }
 
-    if (this.fakeFtp.storage.user) {
-      return new SocketServerMessage(331, `Password required for ${this.fakeFtp.storage.user}`);
+    if (this.fakeFtp.storage.password) {
+      return new SocketServerMessage(230, `User ${this.fakeFtp.storage.user} logged in`);
     }
 
     return new SocketServerMessage(this.code, text);

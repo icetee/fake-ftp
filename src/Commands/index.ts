@@ -5,6 +5,7 @@ import NoImplemented from './NoImplemented';
 import NotUnderstood from './NotUnderstood';
 import Opts from './Opts';
 import User from './User';
+import Pass from './Pass';
 
 export enum Feats {
   Fake = 'fake',
@@ -14,6 +15,7 @@ export enum Feats {
   NotUnderstood = 'nu',
   Opts = 'opts',
   User = 'user',
+  Pass = 'pass',
 }
 
 export {
@@ -24,4 +26,5 @@ export {
   NotUnderstood,
   Opts,
   User,
+  Pass,
 }

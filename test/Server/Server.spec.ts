@@ -253,7 +253,48 @@ describe('FakeFtpServer', () => {
 
           const assertMessage = [
             new SocketServerMessage(257, 'User:').getMessage(),
-            new SocketServerMessage(331, 'Password required for :user:').getMessage(),
+            new SocketServerMessage(331, 'Password required for icetee').getMessage(),
+          ];
+
+          serverMessageCollection.forEach((serverMessage: SocketServerMessage, index: number) => {
+            assert.equal(serverMessage.getMessage(), assertMessage[index]);
+          });
+
+          client.destroy();
+        });
+
+        client.on('close', async () => {
+          await FakeFtpTCP.close();
+
+          done();
+        });
+      })();
+    });
+
+    it('return user logged in with correct account', (done) => {
+      (async () => {
+        const FakeFtpConfig = {
+          ...testConfig,
+          welcome: false,
+          autoAuth: true,
+        };
+        const FakeFtpServer = new FakeFtp(FakeFtpConfig);
+        const FakeFtpTCP: net.Server = await (FakeFtpServer).start();
+
+        const client = new net.Socket();
+
+        client.connect(testConfig.port, testConfig.host, () => {
+          client.write(new SocketClientMessage('USER icetee').getMessage());
+          client.write(new SocketClientMessage('PASS secret').getMessage());
+        });
+
+        client.on('data', (data: Buffer | String) => {
+          const serverMessageCollection = (new SocketServerParse(data)).getServerCommands();
+
+          const assertMessage = [
+            new SocketServerMessage(257, 'User:').getMessage(),
+            new SocketServerMessage(331, 'Password required for icetee').getMessage(),
+            new SocketServerMessage(230, 'User icetee logged in').getMessage(),
           ];
 
           serverMessageCollection.forEach((serverMessage: SocketServerMessage, index: number) => {
