@@ -3,17 +3,13 @@
 
 import * as Delivery from "Delivery";
 import * as Commands from "Commands";
+import FakeCommand from './FakeCommand';
 import { SocketServerMessage } from '../Delivery';
 
-export default class Quit implements Commands.ICommand {
+export default class Quit extends FakeCommand implements Commands.ICommand {
   code = 221;
   name = 'quit';
   defaultMessage = 'Goodbye.';
-  clientMessage: Delivery.SocketClientMessage | null;
-
-  constructor(clientMessage: Delivery.SocketClientMessage | null = null) {
-    this.clientMessage = clientMessage;
-  }
 
   /**
    * When the command is received, it stops the connection between the server and

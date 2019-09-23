@@ -3,17 +3,13 @@
 
 import * as Delivery from "Delivery";
 import * as Commands from "Commands";
+import FakeCommand from './FakeCommand';
 import { SocketServerMessage } from '../Delivery';
 
-export default class Hello implements Commands.ICommand {
+export default class Hello extends FakeCommand implements Commands.ICommand {
   code = 220;
   name = 'hello';
   defaultMessage = 'Fake FTP 1.0.0 Server [127.0.0.1]';
-  clientMessage: Delivery.SocketClientMessage | null;
-
-  constructor(clientMessage: Delivery.SocketClientMessage | null = null) {
-    this.clientMessage = clientMessage;
-  }
 
   /**
    * Configuration dependent, but default message to be send when client

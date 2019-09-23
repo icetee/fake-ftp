@@ -3,9 +3,18 @@
 
 import * as Delivery from 'Delivery';
 import * as Commands from '../Commands';
+import FakeFtp from '../FakeFtp';
 
 export default class CommandRunner {
   static Feats = Commands.Feats;
+
+  static fakeFtp: FakeFtp;
+
+  static setFakeFtp(fakeFtp: FakeFtp) {
+    this.fakeFtp = fakeFtp;
+
+    return this;
+  }
 
   static getServerResponse(
     message: Delivery.SocketClientMessage
@@ -14,12 +23,12 @@ export default class CommandRunner {
     const commandIndex = commandFeats.indexOf(message.command);
 
     if (commandIndex === -1) {
-      return (new Commands.NotUnderstood()).getSocketMessage();
+      return (new Commands.NotUnderstood()).setFakeFtp(this.fakeFtp).getSocketMessage();
     }
 
     const instruction = Object.keys(Commands.Feats)[commandIndex];
 
-    return (new Commands[instruction](message)).getSocketMessage();
+    return (new Commands[instruction]).setFakeFtp(this.fakeFtp).setClientMessage(message).getSocketMessage();
   }
 
   static getServerCommand(
@@ -29,11 +38,11 @@ export default class CommandRunner {
     const commandIndex = commandFeats.indexOf(command);
 
     if (commandIndex === -1) {
-      return (new Commands.NotUnderstood()).getSocketMessage();
+      return (new Commands.NotUnderstood()).setFakeFtp(this.fakeFtp).getSocketMessage();
     }
 
     const instruction = Object.keys(Commands.Feats)[commandIndex];
 
-    return (new Commands[instruction]()).getSocketMessage();
+    return (new Commands[instruction]).setFakeFtp(this.fakeFtp).setServerMessage(command).getSocketMessage();
   }
 }

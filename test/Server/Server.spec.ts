@@ -1,3 +1,5 @@
+/// <reference path="../../src/Server/Server.d.ts" />
+
 import * as net from 'net';
 import { assert } from 'chai';
 import FakeFtp from '../../src/FakeFtp';
@@ -188,6 +190,75 @@ describe('FakeFtpServer', () => {
 
         client.on('data', (data: Buffer | String) => {
           assert.equal(data.toString(), (new SocketServerMessage(500, 'OPTS UTF8 not understood')).getMessage());
+
+          client.destroy();
+        });
+
+        client.on('close', async () => {
+          await FakeFtpTCP.close();
+
+          done();
+        });
+      })();
+    });
+  });
+
+  describe('Authentication', () => {
+    it('require USER if enabled autoAuth', (done) => {
+      (async () => {
+        const FakeFtpConfig = {
+          ...testConfig,
+          welcome: false,
+          autoAuth: true,
+        };
+        const FakeFtpServer = new FakeFtp(FakeFtpConfig);
+        const FakeFtpTCP: net.Server = await (FakeFtpServer).start();
+
+        const client = new net.Socket();
+
+        client.connect(testConfig.port, testConfig.host);
+
+        client.on('data', (data: Buffer | String) => {
+          assert.equal(data.toString(), (new SocketServerMessage(257, 'User:')).getMessage());
+
+          client.destroy();
+        });
+
+        client.on('close', async () => {
+          await FakeFtpTCP.close();
+
+          done();
+        });
+      })();
+    });
+
+    it('require PASS if enabled autoAuth and writed USER icetee', (done) => {
+      (async () => {
+        const FakeFtpConfig = {
+          ...testConfig,
+          welcome: false,
+          autoAuth: true,
+        };
+        const FakeFtpServer = new FakeFtp(FakeFtpConfig);
+        const FakeFtpTCP: net.Server = await (FakeFtpServer).start();
+
+        const client = new net.Socket();
+
+        client.connect(testConfig.port, testConfig.host, () => {
+          client.write(new SocketClientMessage('USER icetee').getMessage());
+        });
+
+        client.on('data', (data: Buffer | String) => {
+          const serverMessageCollection = (new SocketServerParse(data)).getServerCommands();
+
+          const assertMessage = [
+            new SocketServerMessage(257, 'User:').getMessage(),
+            new SocketServerMessage(331, 'Password required for :user:').getMessage(),
+          ];
+
+          serverMessageCollection.forEach((serverMessage: SocketServerMessage, index: number) => {
+            assert.equal(serverMessage.getMessage(), assertMessage[index]);
+          });
 
           client.destroy();
         });

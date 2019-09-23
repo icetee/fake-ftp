@@ -10,7 +10,7 @@ describe('FakeFtp - CommandRunner', () => {
       new SocketClientMessage('bad 1')
     );
 
-    assert.deepEqual(cmd, (new Commands.NotUnderstood()).getSocketMessage());
+    assert.deepEqual(cmd, (new Commands.NotUnderstood()).setServerMessage(cmd).getSocketMessage());
   });
 
   it('return no implemented message with NoImplemented command', () => {
@@ -18,7 +18,7 @@ describe('FakeFtp - CommandRunner', () => {
       new SocketClientMessage('ni')
     );
 
-    assert.deepEqual(cmd, (new Commands.NoImplemented()).getSocketMessage());
+    assert.deepEqual(cmd, (new Commands.NoImplemented()).setServerMessage(cmd).getSocketMessage());
   });
 
   it('return no implemented message with noimplemented command (uppercase)', () => {
@@ -26,6 +26,6 @@ describe('FakeFtp - CommandRunner', () => {
       new SocketClientMessage('NI')
     );
 
-    assert.deepEqual(cmd, (new Commands.NoImplemented()).getSocketMessage());
+    assert.deepEqual(cmd, (new Commands.NoImplemented()).setServerMessage(cmd).getSocketMessage());
   });
 });

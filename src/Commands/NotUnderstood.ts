@@ -3,17 +3,13 @@
 
 import * as Delivery from "Delivery";
 import * as Commands from "Commands";
+import FakeCommand from './FakeCommand';
 import { SocketServerMessage } from '../Delivery';
 
-export default class NotUnderstood implements Commands.ICommand {
+export default class NotUnderstood extends FakeCommand implements Commands.ICommand {
   code = 500;
   name = 'nu';
   defaultMessage = ':command: not understood';
-  clientMessage: Delivery.SocketClientMessage | null;
-
-  constructor(clientMessage: Delivery.SocketClientMessage | null = null) {
-    this.clientMessage = clientMessage;
-  }
 
   /**
    * The error message is sent when an unknown command is sent.

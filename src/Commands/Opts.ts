@@ -3,17 +3,13 @@
 
 import * as Delivery from "Delivery";
 import * as Commands from "Commands";
+import FakeCommand from './FakeCommand';
 import { SocketServerMessage } from '../Delivery';
 
-export default class Opts implements Commands.ICommand {
+export default class Opts extends FakeCommand implements Commands.ICommand {
   code = 500;
   name = 'opts';
   defaultMessage = 'OPTS :param: not understood';
-  clientMessage: Delivery.SocketClientMessage | null;
-
-  constructor(clientMessage: Delivery.SocketClientMessage | null = null) {
-    this.clientMessage = clientMessage;
-  }
 
   /**
    * The error message is sent when the command exists but is not implemented.
