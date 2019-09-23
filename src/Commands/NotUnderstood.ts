@@ -9,6 +9,11 @@ export default class NotUnderstood implements Commands.ICommand {
   code = 500;
   name = 'nu';
   defaultMessage = ':command: not understood';
+  clientMessage: Delivery.SocketClientMessage | null;
+
+  constructor(clientMessage: Delivery.SocketClientMessage | null = null) {
+    this.clientMessage = clientMessage;
+  }
 
   /**
    * The error message is sent when an unknown command is sent.
@@ -17,7 +22,11 @@ export default class NotUnderstood implements Commands.ICommand {
    * @return SocketServerMessage
    **/
   getSocketMessage(message?: string): Delivery.SocketServerMessage {
-    const text = message ? message : this.defaultMessage;
+    let text = message ? message : this.defaultMessage;
+
+    if (this.clientMessage && this.clientMessage.value) {
+      text = text.replace(':command:', this.clientMessage.value);
+    }
 
     return new SocketServerMessage(this.code, text);
   }

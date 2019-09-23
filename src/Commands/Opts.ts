@@ -5,10 +5,10 @@ import * as Delivery from "Delivery";
 import * as Commands from "Commands";
 import { SocketServerMessage } from '../Delivery';
 
-export default class Hello implements Commands.ICommand {
-  code = 220;
-  name = 'hello';
-  defaultMessage = 'Fake FTP 1.0.0 Server [127.0.0.1]';
+export default class Opts implements Commands.ICommand {
+  code = 500;
+  name = 'opts';
+  defaultMessage = 'OPTS :param: not understood';
   clientMessage: Delivery.SocketClientMessage | null;
 
   constructor(clientMessage: Delivery.SocketClientMessage | null = null) {
@@ -16,14 +16,17 @@ export default class Hello implements Commands.ICommand {
   }
 
   /**
-   * Configuration dependent, but default message to be send when client
-   * successfully joins
+   * The error message is sent when the command exists but is not implemented.
    *
    * @param  {string} message
    * @return SocketServerMessage
    **/
   getSocketMessage(message?: string): Delivery.SocketServerMessage {
-    const text = message ? message : this.defaultMessage;
+    let text = message ? message : this.defaultMessage;
+
+    if (this.clientMessage && this.clientMessage.value) {
+      text = text.replace(':param:', this.clientMessage.value);
+    }
 
     return new SocketServerMessage(this.code, text);
   }

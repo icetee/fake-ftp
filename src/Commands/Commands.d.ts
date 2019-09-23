@@ -7,6 +7,7 @@ declare module "Commands" {
     code: number;
     name: string;
     defaultMessage: string;
+    clientMessage: Delivery.SocketClientMessage | null;
 
     getSocketMessage(): Delivery.SocketServerMessage;
   }

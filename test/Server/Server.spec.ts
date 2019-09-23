@@ -169,4 +169,35 @@ describe('FakeFtpServer', () => {
       })();
     });
   });
+
+  describe('Parametered commands', () => {
+    it('OPTS UTF8', (done) => {
+      (async () => {
+        const FakeFtpConfig = {
+          ...testConfig,
+          welcome: false,
+        };
+        const FakeFtpServer = new FakeFtp(FakeFtpConfig);
+        const FakeFtpTCP: net.Server = await (FakeFtpServer).start();
+
+        const client = new net.Socket();
+
+        client.connect(testConfig.port, testConfig.host, () => {
+          client.write(new SocketClientMessage('OPTS UTF8').getMessage());
+        });
+
+        client.on('data', (data: Buffer | String) => {
+          assert.equal(data.toString(), (new SocketServerMessage(500, 'OPTS UTF8 not understood')).getMessage());
+
+          client.destroy();
+        });
+
+        client.on('close', async () => {
+          await FakeFtpTCP.close();
+
+          done();
+        });
+      })();
+    });
+  });
 });

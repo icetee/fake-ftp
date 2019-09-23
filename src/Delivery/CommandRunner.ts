@@ -19,7 +19,7 @@ export default class CommandRunner {
 
     const instruction = Object.keys(Commands.Feats)[commandIndex];
 
-    return (new Commands[instruction]()).getSocketMessage();
+    return (new Commands[instruction](message)).getSocketMessage();
   }
 
   static getServerCommand(

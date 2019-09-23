@@ -9,6 +9,11 @@ export default class Fake implements Commands.ICommand {
   code = 220;
   name = 'fake';
   defaultMessage = 'FAKE';
+  clientMessage: Delivery.SocketClientMessage | null;
+
+  constructor(clientMessage: Delivery.SocketClientMessage | null = null) {
+    this.clientMessage = clientMessage;
+  }
 
   /**
    * The error message is sent when the command exists but is not implemented.

@@ -9,6 +9,11 @@ export default class Quit implements Commands.ICommand {
   code = 221;
   name = 'quit';
   defaultMessage = 'Goodbye.';
+  clientMessage: Delivery.SocketClientMessage | null;
+
+  constructor(clientMessage: Delivery.SocketClientMessage | null = null) {
+    this.clientMessage = clientMessage;
+  }
 
   /**
    * When the command is received, it stops the connection between the server and

@@ -7,7 +7,7 @@
     "start": "tsc -w",
     "build": "tsc",
     "lint": "tslint src/**/*.ts -t verbose",
-    "test": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' mocha -r ts-node/register test/**/*.spec.ts"
+    "test": "mocha -r ts-node/register test/**/*.spec.ts"
   },
   "repository": {
     "type": "git",

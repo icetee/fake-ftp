@@ -9,6 +9,11 @@ export default class NoImplemented implements Commands.ICommand {
   code = 500;
   name = 'ni';
   defaultMessage = 'No implemented';
+  clientMessage: Delivery.SocketClientMessage | null;
+
+  constructor(clientMessage: Delivery.SocketClientMessage | null = null) {
+    this.clientMessage = clientMessage;
+  }
 
   /**
    * The error message is sent when the command exists but is not implemented.

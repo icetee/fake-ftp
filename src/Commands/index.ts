@@ -3,6 +3,7 @@ import Hello from './Hello';
 import Quit from './Quit';
 import NoImplemented from './NoImplemented';
 import NotUnderstood from './NotUnderstood';
+import Opts from './Opts';
 
 export enum Feats {
   Fake = 'fake',
@@ -10,6 +11,7 @@ export enum Feats {
   Quit = 'quit',
   NoImplemented = 'ni',
   NotUnderstood = 'nu',
+  Opts = 'opts',
 }
 
 export {
@@ -18,4 +20,5 @@ export {
   Quit,
   NoImplemented,
   NotUnderstood,
+  Opts,
 }
